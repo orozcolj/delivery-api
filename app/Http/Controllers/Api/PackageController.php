@@ -10,6 +10,7 @@ use App\Http\Requests\UpdatePackageRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use OpenApi\Annotations as OA;
+use App\Http\Resources\PackageResource;
 
 class PackageController extends Controller
 {
@@ -34,7 +35,7 @@ class PackageController extends Controller
                             ->where('trucker_id', $trucker->id)
                             ->paginate(10);
 
-        return response()->json($packages);
+        return PackageResource::collection($packages);
     }
 
     /**
@@ -83,9 +84,9 @@ class PackageController extends Controller
             DB::commit();
 
             return response()->json([
-                'message' => 'Package created successfully.',
-                'package' => $package->load('details.merchandiseType', 'packageStatus')
-            ], 201);
+    'message' => 'Package created successfully.',
+    'package' => new PackageResource($package->load('details.merchandiseType', 'packageStatus'))
+], 201);
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -118,7 +119,7 @@ class PackageController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        return response()->json($package->load('details.merchandiseType', 'packageStatus'));
+        return new PackageResource($package->load('details.merchandiseType', 'packageStatus'));
     }
 
     /**
@@ -148,9 +149,9 @@ class PackageController extends Controller
         }
         
         return response()->json([
-            'message' => 'Package updated successfully.',
-            'package' => $package->load('details.merchandiseType', 'packageStatus')
-        ]);
+    'message' => 'Package updated successfully.',
+    'package' => new PackageResource($package->load('details.merchandiseType', 'packageStatus'))
+]);
     }
 /**
      * @OA\Delete(

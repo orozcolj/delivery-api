@@ -5,6 +5,16 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PackageController; 
 
+// Ruta de Bienvenida
+Route::get('/', function () {
+    return response()->json([
+        'api_name' => 'Delivery API',
+        'version' => '1.0.0',
+        'status' => 'OK',
+        'documentation_url' => url('/api/documentation'),
+    ]);
+});
+
 // Rutas públicas
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
