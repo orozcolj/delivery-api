@@ -11,7 +11,7 @@ class UpdatePackageRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class UpdatePackageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'address' => 'sometimes|required|string|max:100',
+            'package_status_id' => 'sometimes|required|integer|exists:package_statuses,id',
+            'dimensions' => 'sometimes|required|string|max:45',
+            'weight' => 'sometimes|required|string|max:45',
+            'merchandise_type_id' => 'sometimes|required|integer|exists:merchandise_types,id',
         ];
     }
 }

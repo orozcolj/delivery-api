@@ -11,7 +11,7 @@ class StorePackageRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class StorePackageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'address' => 'required|string|max:100',
+            'package_status_id' => 'required|integer|exists:package_statuses,id',
+            'dimensions' => 'required|string|max:45',
+            'weight' => 'required|string|max:45',
+            'merchandise_type_id' => 'required|integer|exists:merchandise_types,id',
         ];
     }
 }
