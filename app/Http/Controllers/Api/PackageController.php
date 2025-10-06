@@ -9,9 +9,23 @@ use App\Http\Requests\StorePackageRequest;
 use App\Http\Requests\UpdatePackageRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use OpenApi\Annotations as OA;
 
 class PackageController extends Controller
 {
+    /**
+     * @OA\Get(
+     * path="/api/packages",
+     * tags={"Packages"},
+     * summary="Listar los paquetes del conductor autenticado",
+     * security={{"bearerAuth":{}}},
+     * @OA\Response(
+     * response=200,
+     * description="Lista de paquetes paginada."
+     * ),
+     * @OA\Response(response=401, ref="#/components/responses/Unauthorized")
+     * )
+     */
     public function index(Request $request)
     {
         $trucker = $request->user()->trucker;
@@ -23,6 +37,29 @@ class PackageController extends Controller
         return response()->json($packages);
     }
 
+    /**
+     * @OA\Post(
+     * path="/api/packages",
+     * tags={"Packages"},
+     * summary="Crear un nuevo paquete",
+     * security={{"bearerAuth":{}}},
+     * @OA\RequestBody(
+     * required=true,
+     * description="Datos del nuevo paquete",
+     * @OA\JsonContent(
+     * required={"address", "package_status_id", "dimensions", "weight", "merchandise_type_id"},
+     * @OA\Property(property="address", type="string", example="Carrera 10 #20-30"),
+     * @OA\Property(property="package_status_id", type="integer", example=1),
+     * @OA\Property(property="dimensions", type="string", example="Medium"),
+     * @OA\Property(property="weight", type="string", example="10 kg"),
+     * @OA\Property(property="merchandise_type_id", type="integer", example=1)
+     * )
+     * ),
+     * @OA\Response(response=201, description="Paquete creado exitosamente."),
+     * @OA\Response(response=401, ref="#/components/responses/Unauthorized"),
+     * @OA\Response(response=422, ref="#/components/responses/ValidationError")
+     * )
+     */
     public function store(StorePackageRequest $request)
     {
         try {
@@ -56,6 +93,25 @@ class PackageController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     * path="/api/packages/{id}",
+     * tags={"Packages"},
+     * summary="Mostrar un paquete específico",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(
+     * name="id",
+     * in="path",
+     * required=true,
+     * description="ID del paquete",
+     * @OA\Schema(type="integer")
+     * ),
+     * @OA\Response(response=200, description="Datos del paquete."),
+     * @OA\Response(response=401, ref="#/components/responses/Unauthorized"),
+     * @OA\Response(response=403, ref="#/components/responses/Forbidden"),
+     * @OA\Response(response=404, ref="#/components/responses/NotFound")
+     * )
+     */
     public function show(Package $package)
     {
         if (auth()->user()->trucker->id !== $package->trucker_id) {
@@ -65,6 +121,20 @@ class PackageController extends Controller
         return response()->json($package->load('details.merchandiseType', 'packageStatus'));
     }
 
+    /**
+     * @OA\Put(
+     * path="/api/packages/{id}",
+     * tags={"Packages"},
+     * summary="Actualizar un paquete",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\RequestBody(description="Datos a actualizar (pueden ser parciales)", @OA\JsonContent()),
+     * @OA\Response(response=200, description="Paquete actualizado exitosamente."),
+     * @OA\Response(response=401, ref="#/components/responses/Unauthorized"),
+     * @OA\Response(response=403, ref="#/components/responses/Forbidden"),
+     * @OA\Response(response=422, ref="#/components/responses/ValidationError")
+     * )
+     */
     public function update(UpdatePackageRequest $request, Package $package)
     {
         if (auth()->user()->trucker->id !== $package->trucker_id) {
@@ -82,7 +152,18 @@ class PackageController extends Controller
             'package' => $package->load('details.merchandiseType', 'packageStatus')
         ]);
     }
-
+/**
+     * @OA\Delete(
+     * path="/api/packages/{id}",
+     * tags={"Packages"},
+     * summary="Eliminar un paquete",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\Response(response=200, description="Paquete eliminado exitosamente."),
+     * @OA\Response(response=401, ref="#/components/responses/Unauthorized"),
+     * @OA\Response(response=403, ref="#/components/responses/Forbidden")
+     * )
+     */
     public function destroy(Package $package)
     {
         if (auth()->user()->trucker->id !== $package->trucker_id) {

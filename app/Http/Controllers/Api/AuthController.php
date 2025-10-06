@@ -10,11 +10,37 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Trucker;
+use OpenApi\Annotations as OA;
 
 class AuthController extends Controller
 {
-    /**
-     * Register a new user and their trucker profile.
+/**
+     * @OA\Post(
+     * path="/api/register",
+     * tags={"Auth"},
+     * summary="Registrar un nuevo usuario/conductor",
+     * @OA\RequestBody(
+     * required=true,
+     * description="Datos para el registro",
+     * @OA\JsonContent(
+     * required={"first_name", "last_name", "email", "password", "password_confirmation", "document", "birth_date", "license_number", "phone"},
+     * @OA\Property(property="first_name", type="string", example="Juan"),
+     * @OA\Property(property="last_name", type="string", example="Pérez"),
+     * @OA\Property(property="email", type="string", format="email", example="juan.perez@example.com"),
+     * @OA\Property(property="password", type="string", format="password", example="password123"),
+     * @OA\Property(property="password_confirmation", type="string", format="password", example="password123"),
+     * @OA\Property(property="document", type="string", example="123456789"),
+     * @OA\Property(property="birth_date", type="string", format="date", example="1990-01-15"),
+     * @OA\Property(property="license_number", type="string", example="B1-12345"),
+     * @OA\Property(property="phone", type="string", example="+573001234567"),
+     * )
+     * ),
+     * @OA\Response(
+     * response=201,
+     * description="Usuario registrado exitosamente."
+     * ),
+     * @OA\Response(response=422, ref="#/components/responses/ValidationError")
+     * )
      */
     public function register(Request $request)
     {
@@ -68,9 +94,26 @@ class AuthController extends Controller
             ], 500);
         }
     }
-
-    /**
-     * Log in a user and return a token.
+/**
+     * @OA\Post(
+     * path="/api/login",
+     * tags={"Auth"},
+     * summary="Iniciar sesión",
+     * @OA\RequestBody(
+     * required=true,
+     * description="Credenciales de usuario",
+     * @OA\JsonContent(
+     * required={"email", "password"},
+     * @OA\Property(property="email", type="string", format="email", example="test@example.com"),
+     * @OA\Property(property="password", type="string", format="password", example="password"),
+     * )
+     * ),
+     * @OA\Response(
+     * response=200,
+     * description="Inicio de sesión exitoso, devuelve el token de acceso."
+     * ),
+     * @OA\Response(response=401, ref="#/components/responses/Unauthorized")
+     * )
      */
     public function login(Request $request)
     {
@@ -98,9 +141,18 @@ class AuthController extends Controller
             'user' => $user,
         ]);
     }
-
-    /**
-     * Log out the user.
+/**
+     * @OA\Post(
+     * path="/api/logout",
+     * tags={"Auth"},
+     * summary="Cerrar sesión",
+     * security={{"bearerAuth":{}}},
+     * @OA\Response(
+     * response=200,
+     * description="Sesión cerrada exitosamente."
+     * ),
+     * @OA\Response(response=401, ref="#/components/responses/Unauthorized")
+     * )
      */
     public function logout(Request $request)
     {

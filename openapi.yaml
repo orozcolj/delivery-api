@@ -1,0 +1,606 @@
+openapi: 3.0.3
+info:
+  title: Delivery API
+  description: API para gestión de transportistas y paquetes. Documentación generada a partir del código del proyecto.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api
+    description: Local development server
+
+paths:
+  /register:
+    post:
+      summary: Registrar un usuario y su perfil de transportista (trucker)
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            examples:
+              example-1:
+                value:
+                  first_name: Juan
+                  last_name: Perez
+                  email: juan.perez@example.com
+                  password: secret123
+                  password_confirmation: secret123
+                  document: 1234567890
+                  birth_date: 1990-01-01
+                  license_number: ABC12345
+                  phone: "+56912345678"
+      responses:
+        '201':
+          description: Usuario registrado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+                  trucker:
+                    $ref: '#/components/schemas/Trucker'
+              examples:
+                success:
+                  value:
+                    message: "User registered successfully!"
+                    user:
+                      id: 1
+                      name: "Juan Perez"
+                      email: "juan.perez@example.com"
+                    trucker:
+                      id: 1
+                      user_id: 1
+                      document: "1234567890"
+                      first_name: "Juan"
+                      last_name: "Perez"
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+
+  /login:
+    post:
+      summary: Autenticar usuario y obtener token
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+            required: [email, password]
+            examples:
+              credentials:
+                value:
+                  email: juan.perez@example.com
+                  password: secret123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  accessToken:
+                    type: string
+                  token_type:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+              examples:
+                success:
+                  $ref: '#/components/examples/LoginResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /user:
+    get:
+      summary: Obtener usuario autenticado
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Usuario autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /logout:
+    post:
+      summary: Cerrar sesión (invalidar token actual)
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /packages:
+    get:
+      summary: Listar paquetes del transportista autenticado (paginado)
+      tags: [Packages]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Número de página
+      responses:
+        '200':
+          description: Lista paginada de paquetes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPackages'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      summary: Crear un paquete
+      tags: [Packages]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StorePackage'
+            examples:
+              create-example:
+                value:
+                  address: "Av. Siempre Viva 742"
+                  package_status_id: 1
+                  dimensions: "30x20x10"
+                  weight: "2kg"
+                  merchandise_type_id: 1
+      responses:
+        '201':
+          description: Package creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  package:
+                    $ref: '#/components/schemas/PackageDetailed'
+              examples:
+                created:
+                  $ref: '#/components/examples/PackageCreated'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+
+  /packages/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Obtener detalles de un paquete
+      tags: [Packages]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Detalles del paquete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackageDetailed'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    put:
+      summary: Actualizar un paquete (parcial o completo según reglas)
+      tags: [Packages]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePackage'
+            examples:
+              update-example:
+                value:
+                  address: "Nueva dirección 123"
+                  package_status_id: 2
+                  dimensions: "40x30x20"
+                  weight: "3kg"
+                  merchandise_type_id: 2
+      responses:
+        '200':
+          description: Package updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  package:
+                    $ref: '#/components/schemas/PackageDetailed'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    delete:
+      summary: Eliminar un paquete
+      tags: [Packages]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Package deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: "Bearer"
+
+  schemas:
+    RegisterRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        password_confirmation:
+          type: string
+        document:
+          type: string
+        birth_date:
+          type: string
+          format: date
+        license_number:
+          type: string
+        phone:
+          type: string
+      required: [first_name, last_name, email, password, password_confirmation, document, birth_date, license_number, phone]
+
+    User:
+      type: object
+      description: Usuario registrado en el sistema
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Juan Perez"
+        email:
+          type: string
+          format: email
+          example: "juan.perez@example.com"
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-10-06T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2025-10-06T12:00:00Z"
+
+    Trucker:
+      description: Perfil del transportista
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        document:
+          type: string
+          example: "1234567890"
+        first_name:
+          type: string
+          example: "Juan"
+        last_name:
+          type: string
+          example: "Perez"
+        birth_date:
+          type: string
+          format: date
+          example: "1990-01-01"
+        license_number:
+          type: string
+          example: "ABC12345"
+        phone:
+          type: string
+          example: "+56912345678"
+
+    PackageStatus:
+      type: object
+      description: Estado del paquete (ej: pending, delivered)
+      properties:
+        id:
+          type: integer
+          example: 1
+        status:
+          type: string
+          example: "pending"
+
+    MerchandiseType:
+      type: object
+      description: Tipo de mercancía
+      properties:
+        id:
+          type: integer
+          example: 1
+        type:
+          type: string
+          example: "Electrónica"
+
+    PackageDetail:
+      type: object
+      description: Detalle del paquete
+      properties:
+        id:
+          type: integer
+          example: 5
+        package_id:
+          type: integer
+          example: 10
+        merchandise_type_id:
+          type: integer
+          example: 1
+        dimensions:
+          type: string
+          example: "30x20x10"
+        weight:
+          type: string
+          example: "2kg"
+        delivery_date:
+          type: string
+          format: date
+          example: "2025-10-10"
+        merchandiseType:
+          $ref: '#/components/schemas/MerchandiseType'
+
+    Package:
+      type: object
+      description: Modelo básico de paquete
+      properties:
+        id:
+          type: integer
+          example: 10
+        address:
+          type: string
+          example: "Av. Siempre Viva 742"
+        trucker_id:
+          type: integer
+          example: 2
+        package_status_id:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-10-06T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2025-10-06T12:00:00Z"
+
+    PackageDetailed:
+      allOf:
+        - $ref: '#/components/schemas/Package'
+        - type: object
+          properties:
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/PackageDetail'
+            packageStatus:
+              $ref: '#/components/schemas/PackageStatus'
+
+    StorePackage:
+      type: object
+      properties:
+        address:
+          type: string
+        package_status_id:
+          type: integer
+        dimensions:
+          type: string
+        weight:
+          type: string
+        merchandise_type_id:
+          type: integer
+      required: [address, package_status_id, dimensions, weight, merchandise_type_id]
+
+    UpdatePackage:
+      type: object
+      properties:
+        address:
+          type: string
+        package_status_id:
+          type: integer
+        dimensions:
+          type: string
+        weight:
+          type: string
+        merchandise_type_id:
+          type: integer
+
+    PaginatedPackages:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PackageDetailed'
+        first_page_url:
+          type: string
+        from:
+          type: integer
+        last_page:
+          type: integer
+        last_page_url:
+          type: string
+        links:
+          type: array
+          items:
+            type: object
+        next_page_url:
+          type: string
+        path:
+          type: string
+        per_page:
+          type: integer
+        prev_page_url:
+          type: string
+        to:
+          type: integer
+        total:
+          type: integer
+
+    ValidationErrors:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: string
+
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          examples:
+            unauthorized:
+              value:
+                message: "Unauthorized"
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          examples:
+            forbidden:
+              value:
+                message: "Forbidden"
+
+    ValidationFailed:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrors'
+
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              error:
+                type: string
+          examples:
+            server:
+              value:
+                message: "Internal error"
+                error: "Detalle del error"
+
+  examples:
+    LoginResponse:
+      summary: Ejemplo de respuesta de login
+      value:
+        message: "Hi Juan Perez"
+        accessToken: "eyJhbGciOi..."
+        token_type: "Bearer"
+        user:
+          id: 1
+          name: "Juan Perez"
+          email: "juan.perez@example.com"
+
+    PackageCreated:
+      summary: Ejemplo package creado
+      value:
+        message: "Package created successfully."
+        package:
+          id: 10
+          address: "Av. Siempre Viva 742"
+          trucker_id: 2
+          package_status_id: 1
+          details:
+            - id: 5
+              package_id: 10
+              merchandise_type_id: 1
+              dimensions: "30x20x10"
+              weight: "2kg"
+              merchandiseType:
+                id: 1
+                type: "Electrónica"
+
