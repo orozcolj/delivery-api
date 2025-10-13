@@ -14,6 +14,47 @@
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background-color: #f2f2f2; }
     </style>
+
+    <style>
+        /* --- Estilos Responsivos --- */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column; /* Apila el logo y la navegación verticalmente */
+                gap: 1rem;
+            }
+
+            .container {
+                margin: 1rem auto; /* Reduce el margen en pantallas pequeñas */
+            }
+
+            /* --- Tabla Responsiva --- */
+            table {
+                border: 0;
+            }
+
+            table thead {
+                display: none; /* Oculta los encabezados de la tabla */
+            }
+
+            table tr {
+                display: block; /* Convierte cada fila en un bloque tipo "tarjeta" */
+                margin-bottom: 1rem;
+                border: 1px solid #ddd;
+            }
+
+            table td {
+                display: block; /* Apila las celdas verticalmente */
+                text-align: right; /* Alinea el contenido a la derecha */
+                border-bottom: 1px dotted #ccc;
+            }
+
+            table td::before {
+                content: attr(data-label); /* Usa el atributo 'data-label' como un falso encabezado */
+                float: left;
+                font-weight: bold;
+            }
+        }
+    </style>
 </head>
 <body>
     <header class="header">
