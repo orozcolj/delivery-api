@@ -43,4 +43,7 @@
         Entrar
     </button>
 </form>
+ <div style="text-align: center; margin-top: 1rem;">
+        <a href="{{ route('register') }}">¿No tienes una cuenta? Regístrate aquí</a>
+    </div>
 @endsection

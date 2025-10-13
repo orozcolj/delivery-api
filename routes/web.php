@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -24,6 +25,9 @@ Route::get('login', [AuthenticatedSessionController::class, 'create'])
 
 // Ruta para procesar el envío del formulario
 Route::post('login', [AuthenticatedSessionController::class, 'store']);
+
+Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
+Route::post('register', [RegisteredUserController::class, 'store']);
 
 // --- Rutas Protegidas ---
 
