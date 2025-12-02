@@ -18,16 +18,18 @@ class PackageTest extends TestCase
     {
         // Arrange
         $userA = User::factory()->create();
+        $truckerA = \App\Models\Trucker::factory()->create(['user_id' => $userA->id]);
         $userB = User::factory()->create();
+        $truckerB = \App\Models\Trucker::factory()->create(['user_id' => $userB->id]);
         $status = PackageStatus::factory()->create();
         MerchandiseType::factory()->create(); // <-- CORRECCIÓN
 
         Package::factory(3)->create([
-            'trucker_id' => $userA->trucker->id,
+            'trucker_id' => $truckerA->id,
             'package_status_id' => $status->id,
         ]);
         Package::factory(2)->create([
-            'trucker_id' => $userB->trucker->id,
+            'trucker_id' => $truckerB->id,
             'package_status_id' => $status->id,
         ]);
         
@@ -44,6 +46,7 @@ class PackageTest extends TestCase
     {
         // Arrange
         $user = User::factory()->create();
+        $trucker = \App\Models\Trucker::factory()->create(['user_id' => $user->id]);
         $status = PackageStatus::factory()->create();
         $type = MerchandiseType::factory()->create(); // <-- CORRECCIÓN (aunque ya estaba bien aquí)
         
@@ -62,7 +65,7 @@ class PackageTest extends TestCase
         $response->assertStatus(201);
         $this->assertDatabaseHas('packages', [
             'address' => '123 Fake St',
-            'trucker_id' => $user->trucker->id
+            'trucker_id' => $trucker->id
         ]);
     }
 
@@ -71,10 +74,11 @@ class PackageTest extends TestCase
     {
         // Arrange
         $user = User::factory()->create();
+        $trucker = \App\Models\Trucker::factory()->create(['user_id' => $user->id]);
         $status = PackageStatus::factory()->create();
         MerchandiseType::factory()->create(); // <-- CORRECCIÓN
         $package = Package::factory()->create([
-            'trucker_id' => $user->trucker->id,
+            'trucker_id' => $trucker->id,
             'package_status_id' => $status->id,
         ]);
 
@@ -96,11 +100,13 @@ class PackageTest extends TestCase
     {
         // Arrange
         $userA = User::factory()->create();
+        $truckerA = \App\Models\Trucker::factory()->create(['user_id' => $userA->id]);
         $userB = User::factory()->create();
+        $truckerB = \App\Models\Trucker::factory()->create(['user_id' => $userB->id]);
         $status = PackageStatus::factory()->create();
         MerchandiseType::factory()->create(); // <-- CORRECCIÓN
         $packageOfUserB = Package::factory()->create([
-            'trucker_id' => $userB->trucker->id,
+            'trucker_id' => $truckerB->id,
             'package_status_id' => $status->id,
         ]);
         
@@ -116,10 +122,11 @@ class PackageTest extends TestCase
     {
         // Arrange
         $user = User::factory()->create();
+        $trucker = \App\Models\Trucker::factory()->create(['user_id' => $user->id]);
         $status = PackageStatus::factory()->create();
         MerchandiseType::factory()->create(); // <-- CORRECCIÓN
         $package = Package::factory()->create([
-            'trucker_id' => $user->trucker->id,
+            'trucker_id' => $trucker->id,
             'package_status_id' => $status->id,
         ]);
 

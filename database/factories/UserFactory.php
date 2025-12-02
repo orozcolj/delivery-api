@@ -31,11 +31,5 @@ class UserFactory extends Factory
         ]);
     }
     
-    public function configure(): static
-    {
-        return $this->afterCreating(function (User $user) {
-            
-            Trucker::factory()->create(['user_id' => $user->id]);
-        });
-    }
+    // Método configure eliminado para evitar la creación automática de truckers
 }

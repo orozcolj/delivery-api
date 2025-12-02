@@ -21,10 +21,36 @@
     </div>
 
     <div class="form-group">
-        <label for="dimensions">Dimensiones</label>
-        <input type="text" name="dimensions" id="dimensions" value="{{ old('dimensions', $package['details']->first()->dimensions ?? '') }}" required>
-        @error('dimensions') <span class="error">{{ $message }}</span> @enderror
+        <label>Dimensiones (cm)</label>
+        @php
+            $dims = explode('x', str_replace(' cm', '', old('dimensions', $package['details']->first()->dimensions ?? '')));
+        @endphp
+        <div style="display: flex; gap: 0.5rem;">
+            <input type="number" name="height" id="height" value="{{ $dims[0] ?? '' }}" min="1" placeholder="Alto" required style="width: 80px;">
+            <input type="number" name="length" id="length" value="{{ $dims[1] ?? '' }}" min="1" placeholder="Largo" required style="width: 80px;">
+            <input type="number" name="width" id="width" value="{{ $dims[2] ?? '' }}" min="1" placeholder="Ancho" required style="width: 80px;">
+        </div>
+        @if ($errors->has('dimensions')) <span class="error">{{ $errors->first('dimensions') }}</span> @endif
     </div>
+    <script>
+    document.querySelector('.edit-form').addEventListener('submit', function(e) {
+        const height = document.getElementById('height').value;
+        const length = document.getElementById('length').value;
+        const width = document.getElementById('width').value;
+        // Unir las dimensiones en el formato requerido
+        const dimensions = `${height}x${length}x${width} cm`;
+        // Crear o actualizar el input hidden
+        let dimInput = document.getElementById('dimensions');
+        if (!dimInput) {
+            dimInput = document.createElement('input');
+            dimInput.type = 'hidden';
+            dimInput.name = 'dimensions';
+            dimInput.id = 'dimensions';
+            this.appendChild(dimInput);
+        }
+        dimInput.value = dimensions;
+    });
+    </script>
 
     <div class="form-group">
         <label for="weight">Peso</label>

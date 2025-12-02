@@ -21,7 +21,7 @@ class PackageDetailFactory extends Factory
             
             
             'merchandise_type_id' => MerchandiseType::inRandomOrder()->first()->id,
-            'dimensions' => fake()->randomElement(['Small', 'Medium', 'Large']),
+            'dimensions' => fake()->numberBetween(10, 100) . 'x' . fake()->numberBetween(10, 100) . 'x' . fake()->numberBetween(10, 100) . ' cm',
             'weight' => fake()->randomFloat(2, 1, 50) . ' kg',
             'delivery_date' => fake()->optional(0.7)->dateTimeThisMonth(),
         ];

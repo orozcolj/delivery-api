@@ -14,13 +14,11 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            // Tablas de catálogo primero, porque otras dependen de ellas.
+            AdminUserSeeder::class,
             PackageStatusSeeder::class,
             MerchandiseTypeSeeder::class,
-            // Luego, las entidades principales.
-            TruckerSeeder::class, // Esto crea Users y Truckers
-            TruckSeeder::class,   // Esto crea Trucks y los asigna
-            // Finalmente, las entidades que dependen de todo lo anterior.
+            TruckerSeeder::class,
+            TruckSeeder::class,
             PackageSeeder::class,
         ]);
     }

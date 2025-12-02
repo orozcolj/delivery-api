@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PackageController; 
+use App\Http\Controllers\Api\TruckerController;
+use App\Http\Controllers\Api\TruckController;
 
 // Ruta de Bienvenida
 Route::get('/', function () {
@@ -27,4 +29,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::middleware('auth:sanctum')->put('/user', [\App\Http\Controllers\Api\UserController::class, 'update']);
     Route::apiResource('packages', PackageController::class);
+    Route::apiResource('truckers', TruckerController::class);
+    Route::apiResource('trucks', TruckController::class);
 });

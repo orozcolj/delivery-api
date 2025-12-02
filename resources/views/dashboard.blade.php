@@ -1,6 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+    @if(auth()->user()->role === 'admin')
+        <div style="margin-bottom: 2rem;">
+            <a href="{{ route('truckers.index') }}" class="btn btn-info" style="margin-right: 1rem;">Gestionar Camioneros</a>
+            <a href="{{ route('trucks.index') }}" class="btn btn-info">Gestionar Camiones</a>
+        </div>
+    @endif
     <h2>Mis Paquetes</h2>
     <a href="{{ route('packages.create') }}" class="button">Crear Nuevo Paquete</a>
 
