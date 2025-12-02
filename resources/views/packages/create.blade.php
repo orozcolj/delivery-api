@@ -29,13 +29,61 @@
         @if ($errors->has('dimensions')) <span class="error">{{ $errors->first('dimensions') }}</span> @endif
     </div>
     <script>
-    document.querySelector('.create-form').addEventListener('submit', function(e) {
+    // Validaciones en tiempo real y feedback visual
+    const form = document.querySelector('.create-form');
+    const showError = (input, message) => {
+        let errorSpan = input.parentElement.querySelector('.error');
+        if (!errorSpan) {
+            errorSpan = document.createElement('span');
+            errorSpan.className = 'error';
+            input.parentElement.appendChild(errorSpan);
+        }
+        errorSpan.textContent = message;
+    };
+    const clearError = (input) => {
+        let errorSpan = input.parentElement.querySelector('.error');
+        if (errorSpan) errorSpan.textContent = '';
+    };
+    form.addEventListener('input', function(e) {
+        const target = e.target;
+        if (target.name === 'address' && target.value.trim() === '') {
+            showError(target, 'La dirección es obligatoria');
+        } else if (target.name === 'weight' && target.value.trim() === '') {
+            showError(target, 'El peso es obligatorio');
+        } else {
+            clearError(target);
+        }
+        // Validación de dimensiones
+        if (['height','length','width'].includes(target.name)) {
+            if (target.value <= 0) {
+                showError(target, 'Debe ser mayor a 0');
+            } else {
+                clearError(target);
+            }
+        }
+    });
+    form.addEventListener('submit', function(e) {
+        let valid = true;
+        ['address','weight','height','length','width'].forEach(name => {
+            const input = document.getElementsByName(name)[0];
+            if (input && input.value.trim() === '') {
+                showError(input, 'Este campo es obligatorio');
+                valid = false;
+            }
+            if (['height','length','width'].includes(name) && input && input.value <= 0) {
+                showError(input, 'Debe ser mayor a 0');
+                valid = false;
+            }
+        });
+        if (!valid) {
+            e.preventDefault();
+            return;
+        }
+        // Unir las dimensiones en el formato requerido
         const height = document.getElementById('height').value;
         const length = document.getElementById('length').value;
         const width = document.getElementById('width').value;
-        // Unir las dimensiones en el formato requerido
         const dimensions = `${height}x${length}x${width} cm`;
-        // Crear o actualizar el input hidden
         let dimInput = document.getElementById('dimensions');
         if (!dimInput) {
             dimInput = document.createElement('input');
@@ -45,6 +93,10 @@
             this.appendChild(dimInput);
         }
         dimInput.value = dimensions;
+        // Feedback visual de envío
+        const btn = form.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.textContent = 'Guardando...';
     });
     </script>
 
