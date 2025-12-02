@@ -1,7 +1,17 @@
 API REST de Entregas con Laravel 10
+
+## Tabla de Contenido
+1. [Descripción](#descripción)
+2. [Características](#características-principales)
+3. [Instalación](#guía-de-instalación-y-puesta-en-marcha)
+4. [Uso](#uso-de-la-aplicación)
+5. [Documentación API](#cómo-usar-y-probar-la-api)
+6. [Manual Técnico](TECHNICAL_MANUAL.md)
+7. [Guía de Contribución](CONTRIBUTING.md)
+
 Este proyecto es una API REST segura construida con Laravel 10, diseñada para gestionar una flota de entregas. Incluye un backend robusto con autenticación, validación, pruebas automatizadas y documentación, así como un frontend simple, también en Laravel, para su consumo.
 
-✨ Características Principales
+## Características Principales
 Autenticación Segura: Implementación de autenticación basada en tokens con Laravel Sanctum.
 
 CRUD Completo: Gestión completa de Paquetes (Packages) con validación robusta mediante Form Requests.
@@ -82,7 +92,7 @@ Bash
 php artisan migrate:fresh --seed
 Nota: Esto creará 11 usuarios de prueba. Uno de ellos siempre será test@example.com con la contraseña password, listo para ser usado.
 
-📦 Uso de la Aplicación
+## Uso de la Aplicación
 Iniciar el Servidor
 Para iniciar la aplicación, ejecuta:
 
@@ -97,7 +107,7 @@ Para verificar que toda la lógica del backend funciona correctamente, puedes ej
 Bash
 
 php artisan test
-📚 Cómo Usar y Probar la API
+## Cómo Usar y Probar la API
 La mejor manera de explorar la API es a través de la documentación interactiva.
 
 1. Ver la Documentación de Swagger
@@ -157,11 +167,28 @@ Value: application/json
 
 Con estos encabezados, ya puedes hacer peticiones como GET /api/packages para ver la lista de paquetes del usuario.
 
-3. Probar el Frontend
-También puedes probar la aplicación web directamente desde el navegador:
 
-Página de Login: http://127.0.0.1:8000/login
+---
 
-Página de Registro: http://127.0.0.1:8000/register
+## Endpoints Principales
+| Método | Endpoint              | Descripción                  |
+|--------|-----------------------|------------------------------|
+| POST   | /api/register         | Registro de usuario          |
+| POST   | /api/login            | Login y obtención de token   |
+| GET    | /api/packages         | Listar paquetes propios      |
+| POST   | /api/packages         | Crear paquete                |
+| PUT    | /api/packages/{id}    | Editar paquete               |
+| DELETE | /api/packages/{id}    | Eliminar paquete             |
+| GET    | /api/truckers         | Listar conductores           |
+| ...    | ...                   | ...                          |
 
-Inicia sesión con el usuario de prueba para acceder al dashboard y gestionar los paquetes.
+---
+
+## Capturas de Pantalla
+> Agrega aquí imágenes del dashboard, formularios y documentación Swagger para mayor claridad.
+
+---
+
+## Referencias
+- [Manual Técnico](TECHNICAL_MANUAL.md)
+- [Guía de Contribución](CONTRIBUTING.md)
