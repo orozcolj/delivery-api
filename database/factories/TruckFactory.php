@@ -17,7 +17,9 @@ class TruckFactory extends Factory
     public function definition(): array
     {
         return [
-            
+            'plate' => $this->faker->unique()->regexify('[A-Z]{3}-[0-9]{3}'),
+            'model' => $this->faker->randomElement(['Volvo', 'Scania', 'Mercedes', 'MAN', 'Iveco', 'DAF', 'Renault']),
+            // otros campos si existen...
         ];
     }
 }

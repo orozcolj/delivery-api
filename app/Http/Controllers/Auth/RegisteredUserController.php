@@ -21,23 +21,42 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
-        // Llama al endpoint de registro de nuestra API con todos los datos del formulario.
-        $response = Http::post(url('/api/register'), $request->all());
+        // Validar todos los datos del formulario
+        $data = $request->validate([
+            'first_name' => ['required', 'string', 'max:45'],
+            'last_name' => ['required', 'string', 'max:45'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'document' => ['required', 'string', 'max:10', 'unique:truckers'],
+            'birth_date' => ['required', 'date'],
+            'license_number' => ['required', 'string', 'max:10'],
+            'phone' => ['required', 'string', 'max:20'],
+        ]);
 
-        // Si la API devuelve un error de validación (422)...
-        if ($response->status() === 422) {
-            // ...vuelve al formulario anterior con los mensajes de error de la API.
-            return back()->withErrors($response->json('errors'))->withInput();
+        try {
+            // Crear el usuario
+            $user = \App\Models\User::create([
+                'name' => $data['first_name'] . ' ' . $data['last_name'],
+                'email' => $data['email'],
+                'password' => \Hash::make($data['password']),
+                'email_verified_at' => now(),
+                'remember_token' => \Str::random(10),
+            ]);
+
+            // Crear el trucker asociado
+            \App\Models\Trucker::create([
+                'user_id' => $user->id,
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'document' => $data['document'],
+                'birth_date' => $data['birth_date'],
+                'license_number' => $data['license_number'],
+                'phone' => $data['phone'],
+            ]);
+
+            return redirect()->route('login')->with('success', '¡Registro exitoso! Por favor, inicia sesión.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'No se pudo registrar el usuario.')->withInput();
         }
-
-        // Si la API devuelve cualquier otro error...
-        if ($response->failed()) {
-            // ...vuelve con un mensaje de error general.
-            return back()->with('error', 'Hubo un problema durante el registro.');
-        }
-
-        // Si el registro en la API fue exitoso...
-        // ...redirige al usuario a la página de login con un mensaje de éxito.
-        return redirect()->route('login')->with('success', '¡Registro exitoso! Por favor, inicia sesión.');
     }
 }

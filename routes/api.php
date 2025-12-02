@@ -25,5 +25,6 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::middleware('auth:sanctum')->put('/user', [\App\Http\Controllers\Api\UserController::class, 'update']);
     Route::apiResource('packages', PackageController::class);
 });

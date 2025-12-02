@@ -41,12 +41,14 @@ Bash
 
 git clone https://github.com/TU_USUARIO/delivery-api-en.git
 cd delivery-api-en
+
 2. Instalar Dependencias
 Instala todas las dependencias de PHP con Composer.
 
 Bash
 
 composer install
+
 3. Configurar el Entorno
 Copia el archivo de ejemplo para las variables de entorno.
 
@@ -63,12 +65,15 @@ DB_PORT=3306
 DB_DATABASE=delivery_api_en
 DB_USERNAME=root
 DB_PASSWORD=
+
+
 4. Generar la Clave de la Aplicación
 Este es un paso crucial para la seguridad de Laravel.
 
 Bash
 
 php artisan key:generate
+
 5. Crear la Base de Datos y Poblarla
 Este comando ejecutará todas las migraciones para crear la estructura de la base de datos y luego usará los seeders para llenarla con datos de prueba.
 
@@ -102,6 +107,7 @@ http://127.0.0.1:8000/api/documentation
 Desde esta página, podrás ver todos los endpoints, los datos que requieren y las respuestas que devuelven. ¡Incluso puedes probarlos directamente!
 
 2. Proceso de Autenticación (Ejemplo con Postman)
+
 A. Registrar un Nuevo Usuario
 Endpoint: POST /api/register
 
@@ -120,6 +126,7 @@ JSON
     "license_number": "C1-54321",
     "phone": "3109876543"
 }
+
 B. Iniciar Sesión para Obtener un Token
 Endpoint: POST /api/login
 

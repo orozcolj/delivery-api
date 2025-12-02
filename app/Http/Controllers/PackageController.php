@@ -12,23 +12,8 @@ class PackageController extends Controller
      */
     public function create(Request $request)
     {
-        $token = $request->session()->get('api_token');
-
-        // Necesitamos obtener los estados y tipos de mercancía para los menús desplegables.
-        // NOTA: Aún no hemos creado estos endpoints en la API, pero lo haremos si es necesario.
-        // Por ahora, simularemos los datos.
-        
-        $statuses = [
-            ['id' => 1, 'status' => 'In Warehouse'],
-            ['id' => 2, 'status' => 'In Transit'],
-        ];
-
-        $types = [
-            ['id' => 1, 'type' => 'Electronics'],
-            ['id' => 2, 'type' => 'Clothing'],
-            ['id' => 3, 'type' => 'Documents'],
-        ];
-
+        $statuses = \App\Models\PackageStatus::all();
+        $types = \App\Models\MerchandiseType::all();
         return view('packages.create', [
             'statuses' => $statuses,
             'types' => $types,
@@ -40,45 +25,40 @@ class PackageController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Obtiene el token de la sesión.
-        $token = $request->session()->get('api_token');
+        $validated = $request->validate([
+            'address' => 'required|string|max:100',
+            'package_status_id' => 'required|exists:package_statuses,id',
+            'dimensions' => 'required|string|max:45',
+            'weight' => 'required|string|max:45',
+            'merchandise_type_id' => 'required|exists:merchandise_types,id',
+        ]);
 
-        // 2. Llama al endpoint de la API para crear el paquete.
-        $response = Http::withToken($token)->post(url('/api/packages'), $request->all());
-
-        // 3. Maneja la respuesta.
-        if ($response->status() === 422) {
-            // Si hay un error de validación, vuelve al formulario anterior
-            // y pasa los errores para que la vista los pueda mostrar.
-            return back()->withErrors($response->json('errors'))->withInput();
+        $user = auth()->user();
+        $trucker = $user->trucker;
+        if (!$trucker) {
+            return back()->with('error', 'No tienes permisos para crear paquetes.');
         }
 
-        if ($response->failed()) {
-            // Si ocurre cualquier otro error, simplemente vuelve con un mensaje general.
-            return back()->with('error', 'Hubo un problema al crear el paquete.');
-        }
+        $package = \App\Models\Package::create([
+            'address' => $validated['address'],
+            'trucker_id' => $trucker->id,
+            'package_status_id' => $validated['package_status_id'],
+        ]);
 
-        // 4. Si todo salió bien, redirige al dashboard.
+        $package->details()->create([
+            'dimensions' => $validated['dimensions'],
+            'weight' => $validated['weight'],
+            'merchandise_type_id' => $validated['merchandise_type_id'],
+        ]);
+
         return redirect()->route('dashboard')->with('success', '¡Paquete creado exitosamente!');
     }
 
     public function edit(Request $request, $id)
 {
-    $token = $request->session()->get('api_token');
-    
-    // Llama a la API para obtener los datos del paquete específico.
-    $response = Http::withToken($token)->get(url("/api/packages/{$id}"));
-    
-    if ($response->failed()) {
-        // Si falla (ej: no encontrado o no autorizado), redirige al dashboard.
-        return redirect()->route('dashboard')->with('error', 'No se pudo encontrar el paquete.');
-    }
-    
-    $package = $response->json('data');
-    
-    // Aquí también necesitaríamos los estados y tipos, igual que en create().
-    $statuses = [ ['id' => 1, 'status' => 'In Warehouse'], /* ... */ ];
-    $types = [ ['id' => 1, 'type' => 'Electronics'], /* ... */ ];
+    $package = \App\Models\Package::with(['details', 'packageStatus'])->findOrFail($id);
+    $statuses = \App\Models\PackageStatus::all();
+    $types = \App\Models\MerchandiseType::all();
 
     return view('packages.edit', [
         'package' => $package,
@@ -89,34 +69,20 @@ class PackageController extends Controller
 
 public function update(Request $request, $id)
 {
-    $token = $request->session()->get('api_token');
-
-    // Llama al endpoint PUT de la API con los nuevos datos.
-    $response = Http::withToken($token)->put(url("/api/packages/{$id}"), $request->all());
-
-    if ($response->status() === 422) {
-        return back()->withErrors($response->json('errors'))->withInput();
+    $package = \App\Models\Package::findOrFail($id);
+    $package->update($request->only(['address', 'package_status_id']));
+    $details = $package->details->first();
+    if ($details) {
+        $details->update($request->only(['dimensions', 'weight', 'merchandise_type_id']));
     }
-
-    if ($response->failed()) {
-        return back()->with('error', 'Hubo un problema al actualizar el paquete.');
-    }
-
     return redirect()->route('dashboard')->with('success', '¡Paquete actualizado exitosamente!');
 }
 
 public function destroy(Request $request, $id)
 {
-    $token = $request->session()->get('api_token');
-    
-    // Llama al endpoint DELETE de la API.
-    $response = Http::withToken($token)->delete(url("/api/packages/{$id}"));
-
-    if ($response->failed()) {
-        return back()->with('error', 'Hubo un problema al eliminar el paquete.');
-    }
-
-    return redirect()->route('dashboard')->with('success', 'Paquete eliminado.');
+    $package = \App\Models\Package::findOrFail($id);
+    $package->delete();
+    return redirect()->route('dashboard')->with('success', '¡Paquete eliminado exitosamente!');
 }
 
     

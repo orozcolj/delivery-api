@@ -31,7 +31,7 @@ Route::post('register', [RegisteredUserController::class, 'store']);
 
 // --- Rutas Protegidas ---
 
-Route::middleware('ensure.token')->group(function () {
+Route::middleware('auth')->group(function () {
     
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

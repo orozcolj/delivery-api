@@ -1,3 +1,13 @@
+    @if (session('success'))
+        <div style="color: green; margin-bottom: 1rem;">
+            {{ session('success') }}
+        </div>
+    @endif
+    @if (session('error'))
+        <div style="color: red; margin-bottom: 1rem;">
+            {{ session('error') }}
+        </div>
+    @endif
 @extends('layouts.app')
 
 @section('content')

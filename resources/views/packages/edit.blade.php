@@ -22,13 +22,13 @@
 
     <div class="form-group">
         <label for="dimensions">Dimensiones</label>
-        <input type="text" name="dimensions" id="dimensions" value="{{ old('dimensions', $package['details']['dimensions']) }}" required>
+        <input type="text" name="dimensions" id="dimensions" value="{{ old('dimensions', $package['details']->first()->dimensions ?? '') }}" required>
         @error('dimensions') <span class="error">{{ $message }}</span> @enderror
     </div>
 
     <div class="form-group">
         <label for="weight">Peso</label>
-        <input type="text" name="weight" id="weight" value="{{ old('weight', $package['details']['weight']) }}" required>
+        <input type="text" name="weight" id="weight" value="{{ old('weight', $package['details']->first()->weight ?? '') }}" required>
         @error('weight') <span class="error">{{ $message }}</span> @enderror
     </div>
 
@@ -47,7 +47,7 @@
         <label for="merchandise_type_id">Tipo de Mercancía</label>
         <select name="merchandise_type_id" id="merchandise_type_id" required>
             @foreach ($types as $type)
-                <option value="{{ $type['id'] }}" {{ old('merchandise_type_id', $package['details']['merchandise_type_id']) == $type['id'] ? 'selected' : '' }}>
+                <option value="{{ $type['id'] }}" {{ old('merchandise_type_id', $package['details']->first()->merchandise_type_id ?? '') == $type['id'] ? 'selected' : '' }}>
                     {{ $type['type'] }}
                 </option>
             @endforeach

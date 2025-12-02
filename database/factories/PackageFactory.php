@@ -19,8 +19,11 @@ class PackageFactory extends Factory
     public function definition(): array
     {
         return [
-             'address' => fake()->streetAddress(),
-        ];}
+            'address' => fake()->streetAddress(),
+            'trucker_id' => \App\Models\Trucker::inRandomOrder()->first()->id,
+            'package_status_id' => \App\Models\PackageStatus::inRandomOrder()->first()->id,
+        ];
+    }
 
          public function configure(): static
     {

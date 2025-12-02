@@ -21,33 +21,18 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validar los datos del formulario (una validación simple es suficiente aquí).
+        // Validar los datos del formulario
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        // 2. Usar el Cliente HTTP para llamar a nuestra API de login.
-        $response = Http::post(url('/api/login'), [
-            'email' => $credentials['email'],
-            'password' => $credentials['password'],
-        ]);
-
-        // 3. Revisar la respuesta de la API.
-        if ($response->successful()) {
-            // Si el login en la API fue exitoso...
-            
-            // a) Guarda el token en la sesión del usuario.
-            $token = $response->json('accessToken');
-            $request->session()->put('api_token', $token);
+        // Autenticar directamente con Laravel
+        if (\Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            // b) Redirige al usuario al dashboard (que crearemos pronto).
             return redirect()->intended('/dashboard');
         }
 
-        // Si el login en la API falló, vuelve al formulario
-        // con un mensaje de error.
         return back()->withErrors([
             'email' => 'Las credenciales proporcionadas no son correctas.',
         ])->onlyInput('email');
