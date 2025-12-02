@@ -90,7 +90,14 @@ Este comando ejecutará todas las migraciones para crear la estructura de la bas
 Bash
 
 php artisan migrate:fresh --seed
-Nota: Esto creará 11 usuarios de prueba. Uno de ellos siempre será test@example.com con la contraseña password, listo para ser usado.
+Nota: Esto creará 11 usuarios de prueba. Además, se crea un usuario administrador para pruebas y gestión avanzada:
+
+**Usuario Admin para pruebas:**
+- Email: admin@example.com
+- Contraseña: admin1234
+- Rol: admin
+
+Usa este usuario para acceder a funcionalidades administrativas y realizar pruebas avanzadas desde el inicio.
 
 ## Uso de la Aplicación
 Iniciar el Servidor
