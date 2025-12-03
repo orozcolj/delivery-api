@@ -8,7 +8,7 @@
     </nav>
 <div class="container">
     <h1>Camiones</h1>
-    <a href="{{ route('trucks.create') }}" class="btn btn-primary mb-3">Agregar camión</a>
+   
         <form method="GET" action="{{ route('trucks.index') }}" class="mb-3" style="display:flex; gap:1rem; align-items:center;">
             <input type="text" name="plate" value="{{ $query ?? '' }}" placeholder="Buscar por placa" class="form-control" style="max-width:200px;">
             <button type="submit" class="btn btn-info">Filtrar</button>
