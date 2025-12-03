@@ -65,6 +65,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/trucks/{truck}/edit', [TruckController::class, 'edit'])->name('trucks.edit');
     Route::put('/trucks/{truck}', [TruckController::class, 'update'])->name('trucks.update');
     Route::delete('/trucks/{truck}', [TruckController::class, 'destroy'])->name('trucks.destroy');
+
+    // Ruta para gestión global de paquetes
+    Route::get('/packages', [PackageController::class, 'index'])->name('packages.index');
     // Route::get('/trucks', [TruckController::class, 'index'])->name('trucks.index');
     // Route::post('/admin/add', [AdminController::class, 'store'])->name('admin.add');
 });

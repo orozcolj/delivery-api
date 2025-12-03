@@ -16,9 +16,7 @@ class PackageSeeder extends Seeder
         $statuses = PackageStatus::all();
 
         foreach ($truckers as $trucker) {
-            
-            Package::factory(rand(2, 5))->create([
-                
+            Package::factory(rand(5, 15))->create([
                 'trucker_id' => $trucker->id,
                 'package_status_id' => $statuses->random()->id,
             ]);

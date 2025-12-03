@@ -12,10 +12,22 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
-        // 1. Obtiene el token de la API que guardamos en la sesión durante el login.
-            $user = auth()->user();
-            $trucker = $user->trucker ?? null;
-            $packages = $trucker ? $trucker->packages()->with(['details', 'packageStatus'])->get() : [];
-            return view('dashboard', ['packages' => $packages]);
+        $user = auth()->user();
+        if ($user->role === 'admin') {
+            $usersCount = \App\Models\User::count();
+            $truckersCount = \App\Models\Trucker::count();
+            $trucksCount = \App\Models\Truck::count();
+            $packagesCount = \App\Models\Package::count();
+            $latestPackages = \App\Models\Package::with(['trucker', 'packageStatus'])->latest()->take(10)->get();
+            return view('admin-dashboard', compact('usersCount', 'truckersCount', 'trucksCount', 'packagesCount', 'latestPackages'));
+        } else {
+            // Mostrar dashboard de trucker
+            $trucker = $user->trucker;
+            if (!$trucker) {
+                return view('auth.dashboard')->with('error', 'No tienes perfil de conductor asociado.');
+            }
+            $packages = $trucker->packages()->with(['packageStatus', 'details'])->latest()->get();
+            return view('auth.dashboard', compact('trucker', 'packages'));
+        }
     }
 }

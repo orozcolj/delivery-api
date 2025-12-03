@@ -97,7 +97,12 @@ Nota: Esto creará 11 usuarios de prueba. Además, se crea un usuario administra
 - Contraseña: admin1234
 - Rol: admin
 
-Usa este usuario para acceder a funcionalidades administrativas y realizar pruebas avanzadas desde el inicio.
+**Usuario Camionero para pruebas:**
+- Email: test@example.com
+- Contraseña: password
+- Rol: trucker
+
+Usa el usuario camionero para probar funcionalidades de conductor y el admin para gestión avanzada.
 
 ## Uso de la Aplicación
 Iniciar el Servidor

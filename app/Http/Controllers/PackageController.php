@@ -8,6 +8,14 @@ use Illuminate\Support\Facades\Http;
 class PackageController extends Controller
 {
     /**
+     * Muestra todos los paquetes para el admin.
+     */
+    public function index()
+    {
+        $packages = \App\Models\Package::with(['trucker', 'packageStatus'])->latest()->paginate(20);
+        return view('packages.index', compact('packages'));
+    }
+    /**
      * Muestra el formulario para crear un nuevo paquete.
      */
     public function create(Request $request)

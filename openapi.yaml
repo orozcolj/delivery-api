@@ -110,19 +110,27 @@ paths:
                            birth_date: "1990-01-01"
                            license_number: "ABC12345"
                            phone: "+56912345678"
+                         - id: 2
+                           user_id: 2
+                           document: "9876543210"
+                           first_name: "Susanna"
+                           last_name: "Brekke"
+                           birth_date: "1985-07-15"
+                           license_number: "DEF67890"
+                           phone: "+56987654321"
                        links:
                          first: "http://localhost:8000/api/truckers?page=1"
-                         last: "http://localhost:8000/api/truckers?page=1"
+                         last: "http://localhost:8000/api/truckers?page=2"
                          prev: null
-                         next: null
+                         next: "http://localhost:8000/api/truckers?page=2"
                        meta:
                          current_page: 1
                          from: 1
-                         last_page: 1
+                         last_page: 2
                          path: "http://localhost:8000/api/truckers"
                          per_page: 10
-                         to: 1
-                         total: 1
+                         to: 10
+                         total: 20
           '401':
             $ref: '#/components/responses/Unauthorized'
     /trucks:
@@ -163,19 +171,25 @@ paths:
                            year: 2020
                            created_at: "2025-12-02T12:00:00Z"
                            updated_at: "2025-12-02T12:00:00Z"
+                         - id: 2
+                           plate: "XYZ789"
+                           model: "Scania R450"
+                           year: 2022
+                           created_at: "2025-12-02T12:00:00Z"
+                           updated_at: "2025-12-02T12:00:00Z"
                        links:
                          first: "http://localhost:8000/api/trucks?page=1"
-                         last: "http://localhost:8000/api/trucks?page=1"
+                         last: "http://localhost:8000/api/trucks?page=2"
                          prev: null
-                         next: null
+                         next: "http://localhost:8000/api/trucks?page=2"
                        meta:
                          current_page: 1
                          from: 1
-                         last_page: 1
+                         last_page: 2
                          path: "http://localhost:8000/api/trucks"
                          per_page: 10
-                         to: 1
-                         total: 1
+                         to: 10
+                         total: 20
           '401':
             $ref: '#/components/responses/Unauthorized'
   /register:
@@ -251,8 +265,8 @@ paths:
             examples:
               credentials:
                 value:
-                  email: juan.perez@example.com
-                  password: secret123
+                  email: test@example.com
+                  password: password
       responses:
         '200':
           description: Login successful
@@ -271,7 +285,14 @@ paths:
                     $ref: '#/components/schemas/User'
               examples:
                 success:
-                  $ref: '#/components/examples/LoginResponse'
+                  value:
+                    message: "Bienvenido test@example.com"
+                    accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    token_type: "Bearer"
+                    user:
+                      id: 1
+                      name: "Test User"
+                      email: "test@example.com"
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -346,11 +367,11 @@ paths:
             examples:
               create-example:
                 value:
-                  address: "Av. Siempre Viva 742"
-                  package_status_id: 1
-                  dimensions: "30x20x10"
-                  weight: "2kg"
-                  merchandise_type_id: 1
+                  address: "Calle Falsa 123"
+                  package_status_id: 2
+                  dimensions: "50x40x30"
+                  weight: "5kg"
+                  merchandise_type_id: 3
       responses:
         '201':
           description: Package creado
@@ -365,7 +386,22 @@ paths:
                     $ref: '#/components/schemas/PackageDetailed'
               examples:
                 created:
-                  $ref: '#/components/examples/PackageCreated'
+                  value:
+                    message: "Package created successfully."
+                    package:
+                      id: 15
+                      address: "Calle Falsa 123"
+                      trucker_id: 1
+                      package_status_id: 2
+                      details:
+                        - id: 21
+                          package_id: 15
+                          merchandise_type_id: 3
+                          dimensions: "50x40x30"
+                          weight: "5kg"
+                          merchandiseType:
+                            id: 3
+                            type: "Alimentos"
         '401':
           $ref: '#/components/responses/Unauthorized'
         '422':
@@ -408,11 +444,11 @@ paths:
             examples:
               update-example:
                 value:
-                  address: "Nueva dirección 123"
-                  package_status_id: 2
-                  dimensions: "40x30x20"
-                  weight: "3kg"
-                  merchandise_type_id: 2
+                  address: "Av. Siempre Viva 742"
+                  package_status_id: 1
+                  dimensions: "30x20x10"
+                  weight: "2kg"
+                  merchandise_type_id: 1
       responses:
         '200':
           description: Package updated

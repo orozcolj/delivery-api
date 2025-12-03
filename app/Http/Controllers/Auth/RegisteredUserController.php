@@ -13,6 +13,9 @@ class RegisteredUserController extends Controller
      */
     public function create()
     {
+        if (auth()->check()) {
+            return redirect()->route('dashboard');
+        }
         return view('auth.register');
     }
 

@@ -13,12 +13,17 @@ class TruckerSeeder extends Seeder
      */
     public function run(): void
     {
-      User::factory(10)->create();
-
-        // Crea un usuario específico que conozcamos para poder probar el login.
-        User::factory()->create([
-            'name' => 'Test Trucker',
-            'email' => 'test@example.com',
-        ]);
+        // Crear 155 usuarios y sus truckers asociados
+        \App\Models\User::factory(155)->create()->each(function ($user) {
+            \App\Models\Trucker::factory()->create([
+                'user_id' => $user->id,
+                'first_name' => explode(' ', $user->name)[0],
+                'last_name' => fake()->lastName(),
+                'document' => fake()->numerify('#########'),
+                'birth_date' => fake()->date('Y-m-d', '2000-01-01'),
+                'license_number' => fake()->bothify('C##-#####'),
+                'phone' => fake()->numerify('3#########'),
+            ]);
+        });
     }
 }

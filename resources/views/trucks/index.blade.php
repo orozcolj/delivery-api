@@ -1,5 +1,11 @@
 @extends('layouts.app')
 @section('content')
+    <nav style="margin-bottom:2rem; background:#f8f9fa; padding:1rem; border-radius:8px; display:flex; gap:1rem;">
+        <a href="{{ route('dashboard') }}" class="btn btn-secondary">Dashboard</a>
+        <a href="{{ route('truckers.index') }}" class="btn btn-info">Camioneros</a>
+        <a href="{{ route('trucks.index') }}" class="btn btn-info">Camiones</a>
+        <a href="{{ route('packages.index') }}" class="btn btn-success">Paquetes</a>
+    </nav>
 <div class="container">
     <h1>Camiones</h1>
     <a href="{{ route('trucks.create') }}" class="btn btn-primary mb-3">Agregar camión</a>
