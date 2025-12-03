@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+
 
 class RegisteredUserController extends Controller
 {
@@ -41,9 +44,9 @@ class RegisteredUserController extends Controller
             $user = \App\Models\User::create([
                 'name' => $data['first_name'] . ' ' . $data['last_name'],
                 'email' => $data['email'],
-                'password' => \Hash::make($data['password']),
+                'password' => Hash::make($data['password']),
                 'email_verified_at' => now(),
-                'remember_token' => \Str::random(10),
+                'remember_token' => Str::random(10),
             ]);
 
             // Crear el trucker asociado
