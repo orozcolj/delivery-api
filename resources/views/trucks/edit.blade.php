@@ -40,9 +40,6 @@
         } else {
             clearError(target);
         }
-        
-            clearError(target);
-        }
     });
     form.addEventListener('submit', function(e) {
         let valid = true;
@@ -50,9 +47,6 @@
             if (input.tagName === 'INPUT' && input.type !== 'submit') {
                 if (input.value.trim() === '') {
                     showError(input, 'Este campo es obligatorio');
-                    valid = false;
-                }
-                
                     valid = false;
                 }
             }
