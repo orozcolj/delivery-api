@@ -68,6 +68,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // Ruta para gestión global de paquetes
     Route::get('/packages', [PackageController::class, 'index'])->name('packages.index');
+    Route::post('/packages/assign', [PackageController::class, 'assign'])->name('packages.assign');
     // Route::get('/trucks', [TruckController::class, 'index'])->name('trucks.index');
     // Route::post('/admin/add', [AdminController::class, 'store'])->name('admin.add');
 });

@@ -16,8 +16,7 @@
             <span class="error" style="color:red;font-size:0.8rem;"></span>
         </div>
         <div class="mb-3">
-            <label for="capacity" class="form-label">Capacidad</label>
-            <input type="number" name="capacity" class="form-control" required value="{{ old('capacity', $truck->capacity) }}">
+            
             <span class="error" style="color:red;font-size:0.8rem;"></span>
         </div>
         <button type="submit" class="btn btn-success">Actualizar</button>
@@ -41,9 +40,7 @@
         } else {
             clearError(target);
         }
-        if (target.name === 'capacity' && target.value !== '' && target.value <= 0) {
-            showError(target, 'La capacidad debe ser mayor a 0');
-        } else if (target.name === 'capacity') {
+        
             clearError(target);
         }
     });
@@ -55,8 +52,7 @@
                     showError(input, 'Este campo es obligatorio');
                     valid = false;
                 }
-                if (input.name === 'capacity' && input.value !== '' && input.value <= 0) {
-                    showError(input, 'La capacidad debe ser mayor a 0');
+                
                     valid = false;
                 }
             }

@@ -6,6 +6,15 @@
         @csrf
         @method('PUT')
         <div class="mb-3">
+                    <div class="mb-3">
+                        <label for="truck_id" class="form-label">Camión asignado</label>
+                        <select name="truck_id" class="form-control" required>
+                            <option value="">Selecciona un camión</option>
+                            @foreach($trucks as $truck)
+                                <option value="{{ $truck->id }}" @if(isset($currentTruckId) && $truck->id == $currentTruckId) selected @endif>{{ $truck->plate }} - {{ $truck->model }}</option>
+                            @endforeach
+                        </select>
+                    </div>
             <label for="first_name" class="form-label">Nombre</label>
             <input type="text" name="first_name" class="form-control" required value="{{ old('first_name', $trucker->first_name) }}">
             <span class="error" style="color:red;font-size:0.8rem;"></span>

@@ -11,11 +11,19 @@ class TruckerController extends Controller
     public function index()
     {
         $truckers = Trucker::with('user')->get();
-        return view('truckers.index', compact('truckers'));
+            $query = request('document');
+            $truckers = Trucker::with('user')
+                ->when($query, function($q) use ($query) {
+                    $q->where('document', 'like', "%$query%");
+                })
+                ->get();
+            return view('truckers.index', compact('truckers', 'query'));
     }
     public function create()
     {
-        return view('truckers.create');
+        $assignedTruckIds = \App\Models\Truck::whereHas('truckers')->pluck('id')->toArray();
+        $trucks = \App\Models\Truck::whereNotIn('id', $assignedTruckIds)->get();
+        return view('truckers.create', compact('trucks'));
     }
     public function store(StoreDriverRequest $request)
     {
@@ -28,7 +36,7 @@ class TruckerController extends Controller
             'email_verified_at' => now(),
             'remember_token' => Str::random(10),
         ]);
-        Trucker::create([
+        $trucker = Trucker::create([
             'user_id' => $user->id,
             'first_name' => $data['first_name'],
             'last_name' => $data['last_name'],
@@ -37,18 +45,31 @@ class TruckerController extends Controller
             'license_number' => $data['license_number'],
             'phone' => $data['phone'],
         ]);
+        if ($request->filled('truck_id')) {
+            $trucker->trucks()->attach($request->truck_id);
+        }
         return redirect()->route('truckers.index')->with('success', 'Camionero creado exitosamente.');
     }
     public function edit($id)
     {
-        $trucker = Trucker::with('user')->findOrFail($id);
-        return view('truckers.edit', compact('trucker'));
+        $trucker = Trucker::with('user', 'trucks')->findOrFail($id);
+        $assignedTruckIds = \App\Models\Truck::whereHas('truckers')->pluck('id')->toArray();
+        // Permitir que el camión actualmente asignado al trucker aparezca en el select
+        $currentTruckId = $trucker->trucks->first() ? $trucker->trucks->first()->id : null;
+        $trucks = \App\Models\Truck::whereNotIn('id', $assignedTruckIds)
+            ->orWhere('id', $currentTruckId)
+            ->get();
+        return view('truckers.edit', compact('trucker', 'trucks', 'currentTruckId'));
     }
     public function update(UpdateDriverRequest $request, $id)
     {
         $trucker = Trucker::findOrFail($id);
         $data = $request->validated();
         $trucker->update($data);
+        // Actualizar camión asignado
+        if ($request->filled('truck_id')) {
+            $trucker->trucks()->sync([$request->truck_id]);
+        }
         if ($request->filled('password')) {
             $trucker->user->update([
                 'password' => Hash::make($request->password)

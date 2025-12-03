@@ -8,7 +8,12 @@ class TruckController extends Controller
     public function index()
     {
         $trucks = Truck::all();
-        return view('trucks.index', compact('trucks'));
+            $query = request('plate');
+            $trucks = Truck::when($query, function($q) use ($query) {
+                    $q->where('plate', 'like', "%$query%");
+                })
+                ->get();
+            return view('trucks.index', compact('trucks', 'query'));
     }
     public function create()
     {

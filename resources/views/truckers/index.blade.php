@@ -9,6 +9,12 @@
 <div class="container">
     <h1>Camioneros</h1>
     <a href="{{ route('truckers.create') }}" class="btn btn-primary mb-3">Agregar camionero</a>
+        <form method="GET" action="{{ route('truckers.index') }}" class="mb-3" style="display:flex; gap:1rem; align-items:center;">
+            <input type="text" name="document" value="{{ $query ?? '' }}" placeholder="Buscar por documento" class="form-control" style="max-width:200px;">
+            <button type="submit" class="btn btn-info">Filtrar</button>
+            <a href="{{ route('truckers.index') }}" class="btn btn-secondary">Limpiar</a>
+            <a href="{{ route('truckers.create') }}" class="btn btn-primary">Agregar camionero</a>
+        </form>
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif

@@ -8,12 +8,34 @@ use Illuminate\Support\Facades\Http;
 class PackageController extends Controller
 {
     /**
+     * Asigna un paquete disponible a un camionero
+     */
+    public function assign(Request $request)
+    {
+        $request->validate([
+            'package_id' => 'required|exists:packages,id',
+            'trucker_id' => 'required|exists:truckers,id',
+        ]);
+        $package = \App\Models\Package::findOrFail($request->package_id);
+        if ($package->trucker_id) {
+            return back()->with('error', 'El paquete ya está asignado a un camionero.');
+        }
+        $package->trucker_id = $request->trucker_id;
+        $package->save();
+        return back()->with('success', 'Paquete asignado correctamente.');
+    }
+    /**
      * Muestra todos los paquetes para el admin.
      */
     public function index()
     {
-        $packages = \App\Models\Package::with(['trucker', 'packageStatus'])->latest()->paginate(20);
-        return view('packages.index', compact('packages'));
+        $query = request('id');
+        $packages = \App\Models\Package::with(['trucker', 'packageStatus'])
+            ->when($query, function($q) use ($query) {
+                $q->where('id', $query);
+            })
+            ->latest()->paginate(20);
+        return view('packages.index', compact('packages', 'query'));
     }
     /**
      * Muestra el formulario para crear un nuevo paquete.
